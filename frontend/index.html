@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeployX</title>
+
+    <title>DeployX Dashboard</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <header>
@@ -14,34 +17,87 @@
     </header>
 
     <main>
-        <h2>Welcome to DeployX</h2>
-        <p>Build. Deploy. Monitor.</p>
 
-        <button onclick="showStatus()">Check Platform Status</button>
+        <section class="dashboard">
 
-        <p id="status"></p>
+            <h2>Deployment Dashboard</h2>
 
-        <hr>
+            <div class="stats">
 
-     <h2>Deployments</h2>
+                <div class="stat-card">
+                    <h3>Total Deployments</h3>
+                    <p id="totalDeployments">0</p>
+                </div>
 
-<h3>Create Deployment</h3>
+                <div class="stat-card">
+                    <h3>Successful</h3>
+                    <p id="successfulDeployments">0</p>
+                </div>
 
-<input type="text" id="applicationName" placeholder="Application Name">
+                <div class="stat-card">
+                    <h3>Failed</h3>
+                    <p id="failedDeployments">0</p>
+                </div>
 
-<input type="text" id="environment" placeholder="Environment">
+            </div>
 
-<input type="text" id="deploymentStatus" placeholder="Status">
+        </section>
 
-<button onclick="createDeployment()">Create Deployment</button>
 
-<hr>
+        <section class="status-section">
 
-<button onclick="loadDeployments()">Load Deployments</button>   
+            <h2>Platform Status</h2>
 
-        <div id="deployments"></div>
+            <button onclick="showStatus()">
+                Check Platform Status
+            </button>
+
+            <p id="status"></p>
+
+        </section>
+
+
+        <section class="deployment-section">
+
+            <h2>Deployments</h2>
+
+            <h3>Create Deployment</h3>
+
+            <input
+                type="text"
+                id="applicationName"
+                placeholder="Application Name"
+            >
+
+            <input
+                type="text"
+                id="environment"
+                placeholder="Environment"
+            >
+
+            <input
+                type="text"
+                id="deploymentStatus"
+                placeholder="Status"
+            >
+
+            <button onclick="createDeployment()">
+                Create Deployment
+            </button>
+
+            <hr>
+
+            <button onclick="loadDeployments()">
+                Load Deployments
+            </button>
+
+            <div id="deployments"></div>
+
+        </section>
+
     </main>
 
     <script src="script.js"></script>
+
 </body>
 </html>
