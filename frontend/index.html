@@ -75,11 +75,13 @@
                 placeholder="Environment"
             >
 
-            <input
-                type="text"
-                id="deploymentStatus"
-                placeholder="Status"
-            >
+            <select id="deploymentStatus">
+    <option value="">Select Status</option>
+    <option value="RUNNING">RUNNING</option>
+    <option value="SUCCESS">SUCCESS</option>
+    <option value="FAILED">FAILED</option>
+            </select>
+
 
             <button onclick="createDeployment()">
                 Create Deployment

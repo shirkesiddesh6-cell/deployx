@@ -4,106 +4,547 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
-    color: #222;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
 }
+
+/* Header */
 
 header {
-    background: #1f2937;
-    color: white;
-    padding: 30px;
+    position: relative;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 120%,
+            rgba(168, 85, 247, 0.35),
+            transparent 55%
+        ),
+        linear-gradient(
+            135deg,
+            #020617,
+            #0f0220,
+            #020617
+        );
+
+    border-bottom: 1px solid rgba(168, 85, 247, 0.4);
 }
+
+/* Purple energy wave */
+
+header::before {
+    content: "";
+    position: absolute;
+
+    width: 140%;
+    height: 180px;
+
+    bottom: -110px;
+    left: -20%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(168, 85, 247, 0.7),
+        rgba(236, 72, 153, 0.6),
+        rgba(168, 85, 247, 0.7),
+        transparent
+    );
+
+    filter: blur(35px);
+
+    transform: rotate(-3deg);
+
+    animation: energyWave 6s ease-in-out infinite;
+}
+
+@keyframes energyWave {
+
+    0% {
+        transform: translateX(-8%) rotate(-3deg);
+    }
+
+    50% {
+        transform: translateX(8%) rotate(3deg);
+    }
+
+    100% {
+        transform: translateX(-8%) rotate(-3deg);
+    }
+}
+
+header h1 {
+    position: relative;
+    z-index: 2;
+
+    margin: 0;
+
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: 3px;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 0 10px rgba(168, 85, 247, 0.8),
+        0 0 30px rgba(168, 85, 247, 0.5),
+        0 0 60px rgba(168, 85, 247, 0.3);
+}
+
+header p {
+    position: relative;
+    z-index: 2;
+
+    margin-top: 12px;
+
+    color: #d8b4fe;
+
+    font-size: 18px;
+    letter-spacing: 1px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 36px;
+    letter-spacing: 1px;
+}
+
+header p {
+    margin: 8px 0 0;
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+/* Main */
 
 main {
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 20px;
+    max-width: 1100px;
+    margin: 35px auto;
+    padding: 0 20px;
 }
 
+/* Sections */
+
 section {
-    background: white;
+    background: #1e293b;
     padding: 25px;
     margin-bottom: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    border: 1px solid #334155;
 }
+
+/* Section headings */
 
 h2 {
     margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
 }
 
-.stats {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.stat-card {
-    flex: 1;
-    min-width: 200px;
-    background: #f8fafc;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-}
-
-.stat-card h3 {
+h3 {
     margin-bottom: 10px;
 }
 
-.stat-card p {
-    font-size: 32px;
-    font-weight: bold;
-    margin: 0;
+/* Dashboard stats */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
 }
+
+.stat-card {
+    position: relative;
+    overflow: hidden;
+
+    background: rgba(15, 23, 42, 0.75);
+    padding: 25px;
+    border-radius: 14px;
+    text-align: center;
+
+    border: 1px solid rgba(168, 85, 247, 0.35);
+
+    backdrop-filter: blur(10px);
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+
+    animation: cardFloat 4s ease-in-out infinite;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+
+    border-color: rgba(168, 85, 247, 0.9);
+
+    box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.25),
+        0 0 45px rgba(168, 85, 247, 0.12);
+}
+
+/* Moving light inside card */
+
+.stat-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 2px;
+
+    top: 0;
+    left: -180px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #a855f7,
+        #e879f9,
+        transparent
+    );
+
+    box-shadow: 0 0 15px #a855f7;
+
+    animation: cardLight 4s linear infinite;
+}
+
+@keyframes cardLight {
+
+    0% {
+        left: -180px;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes cardFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.stat-card h3 {
+    color: #94a3b8;
+    font-size: 15px;
+    font-weight: normal;
+}
+
+.stat-card p {
+    margin: 10px 0 0;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+/* Buttons */
 
 button {
     padding: 12px 20px;
     border: none;
-    border-radius: 6px;
+    border-radius: 7px;
     cursor: pointer;
     background: #2563eb;
     color: white;
-    font-size: 16px;
-    margin: 5px;
+    font-size: 15px;
+    margin: 5px 5px 5px 0;
 }
 
 button:hover {
-    opacity: 0.9;
+    background: #1d4ed8;
 }
 
-input {
+/* Inputs */
+
+input,
+select {
     display: block;
-    width: 80%;
+    width: 100%;
     max-width: 500px;
-    margin: 10px 0;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
+    margin: 12px 0;
+    padding: 13px;
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid #475569;
+    border-radius: 7px;
+    font-size: 15px;
 }
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* Deployment cards */
 
 .deployment-card {
-    background: #f8fafc;
-    border-left: 5px solid #2563eb;
-    padding: 15px;
+    background: #0f172a;
+    padding: 18px;
     margin-top: 15px;
-    border-radius: 6px;
+    border-radius: 9px;
+    border: 1px solid #334155;
 }
 
 .deployment-card h3 {
     margin-top: 0;
+    color: #f8fafc;
 }
 
-hr {
-    margin: 25px 0;
-    border: none;
-    border-top: 1px solid #ddd;
+.deployment-card p {
+    color: #94a3b8;
+    margin: 8px 0;
 }
+
+.deployment-card strong {
+    color: #e2e8f0;
+}
+
+/* Status */
 
 #status {
     margin-top: 15px;
     font-weight: bold;
+    color: #22c55e;
+}
+
+/* Divider */
+
+hr {
+    margin: 25px 0;
+    border: none;
+    border-top: 1px solid #334155;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 28px;
+    }
+
+    main {
+        padding: 0 12px;
+    }
+
+    section {
+        padding: 20px;
+    }
+}
+/* ============================= */
+/* DeployX Purple Energy Effect  */
+/* ============================= */
+
+body {
+    position: relative;
+    overflow-x: hidden;
+
+    background:
+        radial-gradient(
+            circle at 15% 30%,
+            rgba(168, 85, 247, 0.12),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 85% 70%,
+            rgba(168, 85, 247, 0.12),
+            transparent 35%
+        ),
+        #020617;
+}
+
+/* Moving purple energy behind the page */
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    width: 700px;
+    height: 250px;
+
+    left: -250px;
+    top: 45%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(168, 85, 247, 0.25),
+        rgba(217, 70, 239, 0.35),
+        rgba(168, 85, 247, 0.25),
+        transparent
+    );
+
+    filter: blur(55px);
+
+    transform: rotate(-12deg);
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    animation: purpleFlow 9s ease-in-out infinite;
+}
+
+/* Second energy wave */
+
+body::after {
+    content: "";
+
+    position: fixed;
+
+    width: 600px;
+    height: 220px;
+
+    right: -250px;
+    top: 20%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(124, 58, 237, 0.25),
+        rgba(192, 132, 252, 0.35),
+        rgba(124, 58, 237, 0.25),
+        transparent
+    );
+
+    filter: blur(60px);
+
+    transform: rotate(15deg);
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    animation: purpleFlowReverse 11s ease-in-out infinite;
+}
+
+@keyframes purpleFlow {
+
+    0% {
+        transform: translateX(-100px) rotate(-12deg);
+    }
+
+    50% {
+        transform: translateX(500px) rotate(8deg);
+    }
+
+    100% {
+        transform: translateX(-100px) rotate(-12deg);
+    }
+}
+
+@keyframes purpleFlowReverse {
+
+    0% {
+        transform: translateX(100px) rotate(15deg);
+    }
+
+    50% {
+        transform: translateX(-450px) rotate(-5deg);
+    }
+
+    100% {
+        transform: translateX(100px) rotate(15deg);
+    }
+}
+/* ============================= */
+/* Deployment Status Badges      */
+/* ============================= */
+
+.deployment-card {
+    position: relative;
+    overflow: hidden;
+
+    background: rgba(15, 23, 42, 0.78);
+
+    border: 1px solid rgba(168, 85, 247, 0.25);
+    border-radius: 12px;
+
+    padding: 20px;
+    margin-top: 15px;
+
+    backdrop-filter: blur(10px);
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.deployment-card:hover {
+    transform: translateY(-4px);
+
+    border-color: rgba(168, 85, 247, 0.7);
+
+    box-shadow:
+        0 0 25px rgba(168, 85, 247, 0.18);
+}
+
+.deployment-card h3 {
+    color: #f8fafc;
+    margin-top: 0;
+}
+
+.deployment-card p {
+    color: #94a3b8;
+}
+
+/* Status text */
+
+.deployment-card strong {
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+
+    letter-spacing: 0.5px;
+
+    color: #ffffff;
+
+    background: #7c3aed;
+
+    box-shadow:
+        0 0 10px rgba(124, 58, 237, 0.5);
+
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+/* Status animation */
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 8px rgba(168, 85, 247, 0.35);
+    }
+
+    50% {
+        box-shadow:
+            0 0 20px rgba(168, 85, 247, 0.8);
+    }
 }

@@ -65,7 +65,21 @@ app.post("/api/deployments", async (req, res) => {
     try {
         const { application_name, environment, status } = req.body;
 
-        const result = await pool.query(
+if (!application_name || !environment || !status) {
+    return res.status(400).json({
+        error: "Application name, environment, and status are required"
+    });
+}
+
+const allowedStatuses = ["RUNNING", "SUCCESS", "FAILED"];
+
+if (!allowedStatuses.includes(status.toUpperCase())) {
+    return res.status(400).json({
+        error: "Invalid status. Use RUNNING, SUCCESS, or FAILED"
+    });
+}        
+
+const result = await pool.query(
             `INSERT INTO deployments
             (application_name, environment, status)
             VALUES ($1, $2, $3)
@@ -81,7 +95,74 @@ app.post("/api/deployments", async (req, res) => {
         });
     }
 });
+app.put("/api/deployments/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({
+                error: "Status is required"
+            });
+        }
+
+        const result = await pool.query(
+            `UPDATE deployments
+             SET status = $1
+             WHERE id = $2
+             RETURNING *`,
+            [status, id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                error: "Deployment not found"
+            });
+        }
+
+        res.json(result.rows[0]);
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: "Failed to update deployment"
+        });
+    }
+});
+
+app.delete("/api/deployments/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `DELETE FROM deployments
+             WHERE id = $1
+             RETURNING *`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                error: "Deployment not found"
+            });
+        }
+
+        res.json({
+            message: "Deployment deleted successfully",
+            deployment: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            error: "Failed to delete deployment"
+        });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`DeployX backend running on port ${PORT}`);
 });
+
