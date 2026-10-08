@@ -1,6 +1,7 @@
 services:
 
   postgres:
+    restart: unless-stopped
     image: postgres:18
     container_name: deployx-postgres
     environment:
@@ -13,15 +14,24 @@ services:
       - deployx-postgres-data:/var/lib/postgresql
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U deployx_user -d deployx"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   backend:
+    restart: unless-stopped
     build: ./backend
     container_name: deployx-backend
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   frontend:
+    restart: unless-stopped
     build: ./frontend
     container_name: deployx-frontend
     ports:
@@ -30,6 +40,7 @@ services:
       - backend
 
   nginx:
+    restart: unless-stopped
     build: ./nginx
     container_name: deployx-nginx
     ports:
