@@ -1,0 +1,43 @@
+services:
+
+  postgres:
+    image: postgres:18
+    container_name: deployx-postgres
+    environment:
+      POSTGRES_DB: deployx
+      POSTGRES_USER: deployx_user
+      POSTGRES_PASSWORD: deployx123
+    ports:
+      - "5432:5432"
+    volumes:
+      - deployx-postgres-data:/var/lib/postgresql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build: ./backend
+    container_name: deployx-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    container_name: deployx-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  nginx:
+    build: ./nginx
+    container_name: deployx-nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+
+  deployx-postgres-data:

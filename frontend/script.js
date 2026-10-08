@@ -1,9 +1,6 @@
-async function updateDeployment(id) {
-    // ...
-}
 async function showStatus() {
     try {
-        const response = await fetch("http://localhost:3000/api/status");
+        const response = await fetch("/api/status");
         const data = await response.json();
 
         if (data.length > 0) {
@@ -25,9 +22,7 @@ async function showStatus() {
 
 async function loadDeployments() {
     try {
-        const response =
-            await fetch("http://localhost:3000/api/deployments");
-
+        const response = await fetch("/api/deployments");
         const data = await response.json();
 
         const deploymentsDiv =
@@ -37,15 +32,13 @@ async function loadDeployments() {
             data.length;
 
         const successful =
-            data.filter(
-                deployment =>
-                    deployment.status.trim().toUpperCase() === "SUCCESS"
+            data.filter(d =>
+                d.status.trim().toUpperCase() === "SUCCESS"
             ).length;
 
         const failed =
-            data.filter(
-                deployment =>
-                    deployment.status.trim().toUpperCase() === "FAILED"
+            data.filter(d =>
+                d.status.trim().toUpperCase() === "FAILED"
             ).length;
 
         document.getElementById("successfulDeployments").textContent =
@@ -54,70 +47,65 @@ async function loadDeployments() {
         document.getElementById("failedDeployments").textContent =
             failed;
 
+        deploymentsDiv.innerHTML = "";
 
-        if (data.length === 0) {
-            deploymentsDiv.textContent =
-                "No deployments found.";
+        data.forEach(deployment => {
 
-            return;
-        }
+            const status =
+                deployment.status.trim().toUpperCase();
 
+            deploymentsDiv.innerHTML += `
+                <div class="deployment-card">
 
-        deploymentsDiv.innerHTML = data.map(deployment => `
+                    <h3>${deployment.application_name}</h3>
 
-          <div class="deployment-card">
+                    <p>
+                        Environment:
+                        ${deployment.environment}
+                    </p>
 
-     <h3>${deployment.application_name}</h3>
+                    <p>
+                        Current Status:
+                        <strong class="status-badge ${status.toLowerCase()}">
+                            ${status}
+                        </strong>
+                    </p>
 
-      <p>
-        Environment:
-        ${deployment.environment}
-    </p>
+                    <select id="status-${deployment.id}">
+                        <option value="RUNNING"
+                            ${status === "RUNNING" ? "selected" : ""}>
+                            RUNNING
+                        </option>
 
-    <p>
-        Current Status:
-        <strong class="status-badge ${deployment.status.trim().toLowerCase()}">
-            ${deployment.status}
-        </strong>
-    </p>
+                        <option value="SUCCESS"
+                            ${status === "SUCCESS" ? "selected" : ""}>
+                            SUCCESS
+                        </option>
 
-    <select id="status-${deployment.id}">
-        <option value="RUNNING" ${deployment.status.trim().toUpperCase() === "RUNNING" ? "selected" : ""}>
-            RUNNING
-        </option>
+                        <option value="FAILED"
+                            ${status === "FAILED" ? "selected" : ""}>
+                            FAILED
+                        </option>
+                    </select>
 
-        <option value="SUCCESS" ${deployment.status.trim().toUpperCase() === "SUCCESS" ? "selected" : ""}>
-            SUCCESS
-        </option>
+                    <button onclick="updateDeployment(${deployment.id})">
+                        Update Status
+                    </button>
 
-        <option value="FAILED" ${deployment.status.trim().toUpperCase() === "FAILED" ? "selected" : ""}>
-            FAILED
-        </option>
-    </select>
+                    <button onclick="deleteDeployment(${deployment.id})">
+                        Delete Deployment
+                    </button>
 
-    <button onclick="updateDeployment(${deployment.id})">
-        Update Status
-    </button>
+                    <p>
+                        Created:
+                        ${deployment.created_at}
+                    </p>
 
-<button onclick="deleteDeployment(${deployment.id})">
-    Delete Deployment
-</button>
-
-    <p>
-        Created:
-        ${deployment.created_at}
-    </p>
-
-</div>
-
-        `).join("");
-
+                </div>
+            `;
+        });
 
     } catch (error) {
-
-        document.getElementById("deployments").textContent =
-            "Failed to load deployments.";
-
         console.error(error);
     }
 }
@@ -131,86 +119,73 @@ async function createDeployment() {
     const environment =
         document.getElementById("environment").value;
 
-    const deploymentStatus =
+    const status =
         document.getElementById("deploymentStatus").value;
 
-
-    if (!applicationName ||
-        !environment ||
-        !deploymentStatus) {
-
-        alert("Please fill in all deployment fields.");
-
+    if (!applicationName || !environment || !status) {
+        alert("Please fill all deployment fields.");
         return;
     }
 
-
     try {
 
-        const response =
-            await fetch("http://localhost:3000/api/deployments", {
+        const response = await fetch("/api/deployments", {
+            method: "POST",
 
-                method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    application_name: applicationName,
-
-                    environment: environment,
-
-                    status: deploymentStatus
-                })
-            });
-
+            body: JSON.stringify({
+                application_name: applicationName,
+                environment: environment,
+                status: status
+            })
+        });
 
         const data = await response.json();
-
 
         if (response.ok) {
 
             alert("Deployment created successfully.");
 
             document.getElementById("applicationName").value = "";
-
             document.getElementById("environment").value = "";
-
             document.getElementById("deploymentStatus").value = "";
 
             loadDeployments();
 
         } else {
 
-            alert(
-                data.error ||
-                "Failed to create deployment."
-            );
-        }
+            alert(data.error || "Failed to create deployment.");
 
+        }
 
     } catch (error) {
 
         console.error(error);
-
         alert("Backend connection failed.");
+
     }
 }
 
+
 async function updateDeployment(id) {
+
     const status =
         document.getElementById(`status-${id}`).value;
 
     try {
+
         const response = await fetch(
-            `http://localhost:3000/api/deployments/${id}`,
+            `/api/deployments/${id}`,
             {
                 method: "PUT",
+
                 headers: {
                     "Content-Type": "application/json"
                 },
+
                 body: JSON.stringify({
                     status: status
                 })
@@ -220,19 +195,31 @@ async function updateDeployment(id) {
         const data = await response.json();
 
         if (response.ok) {
+
             alert("Deployment status updated successfully.");
+
             loadDeployments();
+
         } else {
-            alert(data.error || "Failed to update deployment.");
+
+            alert(
+                data.error ||
+                "Failed to update deployment."
+            );
+
         }
 
     } catch (error) {
+
         console.error(error);
         alert("Backend connection failed.");
+
     }
 }
 
+
 async function deleteDeployment(id) {
+
     const confirmDelete = confirm(
         "Are you sure you want to delete this deployment?"
     );
@@ -242,8 +229,9 @@ async function deleteDeployment(id) {
     }
 
     try {
+
         const response = await fetch(
-            `http://localhost:3000/api/deployments/${id}`,
+            `/api/deployments/${id}`,
             {
                 method: "DELETE"
             }
@@ -252,14 +240,24 @@ async function deleteDeployment(id) {
         const data = await response.json();
 
         if (response.ok) {
+
             alert("Deployment deleted successfully.");
+
             loadDeployments();
+
         } else {
-            alert(data.error || "Failed to delete deployment.");
+
+            alert(
+                data.error ||
+                "Failed to delete deployment."
+            );
+
         }
 
     } catch (error) {
+
         console.error(error);
         alert("Backend connection failed.");
+
     }
 }
