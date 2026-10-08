@@ -23,9 +23,21 @@
 
         <hr>
 
-        <h2>Deployments</h2>
+     <h2>Deployments</h2>
 
-        <button onclick="loadDeployments()">Load Deployments</button>
+<h3>Create Deployment</h3>
+
+<input type="text" id="applicationName" placeholder="Application Name">
+
+<input type="text" id="environment" placeholder="Environment">
+
+<input type="text" id="deploymentStatus" placeholder="Status">
+
+<button onclick="createDeployment()">Create Deployment</button>
+
+<hr>
+
+<button onclick="loadDeployments()">Load Deployments</button>   
 
         <div id="deployments"></div>
     </main>

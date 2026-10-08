@@ -45,3 +45,50 @@ async function loadDeployments() {
         console.error(error);
     }
 }
+
+async function createDeployment() {
+    const applicationName =
+        document.getElementById("applicationName").value;
+
+    const environment =
+        document.getElementById("environment").value;
+
+    const deploymentStatus =
+        document.getElementById("deploymentStatus").value;
+
+if (!applicationName || !environment || !deploymentStatus) {
+    alert("Please fill in all deployment fields.");
+    return;
+}
+    try {
+        const response = await fetch("http://localhost:3000/api/deployments", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                application_name: applicationName,
+                environment: environment,
+                status: deploymentStatus
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Deployment created successfully.");
+
+            document.getElementById("applicationName").value = "";
+            document.getElementById("environment").value = "";
+            document.getElementById("deploymentStatus").value = "";
+
+            loadDeployments();
+        } else {
+            alert(data.error || "Failed to create deployment.");
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert("Backend connection failed.");
+    }
+}
