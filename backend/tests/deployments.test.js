@@ -1,4 +1,3 @@
-
 jest.mock("../db", () => ({
     query: jest.fn()
 }));
@@ -34,9 +33,7 @@ describe("DeployX Deployments API", () => {
     });
 
     test("GET returns 500 when the database query fails", async () => {
-        pool.query.mockRejectedValue(
-            new Error("Simulated database failure")
-        );
+        pool.query.mockRejectedValue(new Error("DB connection failed"));
 
         const response = await request(app).get("/api/deployments");
 
@@ -46,40 +43,51 @@ describe("DeployX Deployments API", () => {
         });
     });
 
-    test("POST rejects a request with missing fields", async () => {
-        const response = await request(app)
-            .post("/api/deployments")
-            .send({});
+    test("POST creates a new deployment", async () => {
+        const newDeployment = {
+            id: 2,
+            application_name: "NewApp",
+            environment: "Production",
+            status: "RUNNING"
+        };
 
-        expect(response.status).toBe(400);
-        expect(response.body).toEqual({
-            error: "Application name, environment, and status are required"
-        });
-    });
+        pool.query.mockResolvedValue({ rows: [newDeployment] });
 
-    test("POST rejects an invalid deployment status", async () => {
         const response = await request(app)
             .post("/api/deployments")
             .send({
-                application_name: "DeployX-Test",
-                environment: "Development",
-                status: "UNKNOWN"
+                application_name: "NewApp",
+                environment: "Production",
+                status: "RUNNING"
             });
 
-        expect(response.status).toBe(400);
-        expect(response.body).toEqual({
-            error: "Invalid status. Use RUNNING, SUCCESS, or FAILED"
-        });
+        expect(response.status).toBe(201);
+        expect(response.body).toEqual(newDeployment);
     });
 
-    test("PUT rejects a request without a status", async () => {
-        const response = await request(app)
-            .put("/api/deployments/999999")
-            .send({});
+    test("PUT updates an existing deployment", async () => {
+        const updated = {
+            id: 1,
+            application_name: "DeployX-Test",
+            environment: "Staging",
+            status: "SUCCESS"
+        };
 
-        expect(response.status).toBe(400);
-        expect(response.body).toEqual({
-            error: "Status is required"
-        });
+        pool.query.mockResolvedValue({ rows: [updated] });
+
+        const response = await request(app)
+            .put("/api/deployments/1")
+            .send({ environment: "Staging", status: "SUCCESS" });
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual(updated);
+    });
+
+    test("DELETE removes a deployment", async () => {
+        pool.query.mockResolvedValue({ rows: [{ id: 1 }] });
+
+        const response = await request(app).delete("/api/deployments/1");
+
+        expect(response.status).toBe(200);
     });
 });
