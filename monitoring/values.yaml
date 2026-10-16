@@ -1,0 +1,47 @@
+grafana:
+  enabled: true
+  resources:
+    requests:
+      cpu: 25m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 640Mi
+  startupProbe:
+    httpGet:
+      path: /api/health
+      port: grafana
+    failureThreshold: 60
+    periodSeconds: 10
+
+prometheus:
+  enabled: true
+  prometheusSpec:
+    retention: 2d
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 192Mi
+      limits:
+        cpu: 300m
+        memory: 384Mi
+    storageSpec: {}
+
+alertmanager:
+  enabled: false
+
+prometheusOperator:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
