@@ -27,6 +27,14 @@ jobs:
         working-directory: ./backend
         run: node --check server.js || echo "No server.js, skipping"
 
+            - name: Create dummy .env for CI validation
+        run: |
+          cat > .env <<EOF
+          POSTGRES_DB=deployx
+          POSTGRES_USER=deployx
+          POSTGRES_PASSWORD=deployx_ci_dummy
+          EOF
+
       - name: Validate Docker Compose file
         run: docker compose config
 
