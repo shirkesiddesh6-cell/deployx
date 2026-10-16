@@ -33,6 +33,19 @@ describe("DeployX Deployments API", () => {
         );
     });
 
+    test("GET returns 500 when the database query fails", async () => {
+        pool.query.mockRejectedValue(
+            new Error("Simulated database failure")
+        );
+
+        const response = await request(app).get("/api/deployments");
+
+        expect(response.status).toBe(500);
+        expect(response.body).toEqual({
+            error: "Failed to fetch deployments"
+        });
+    });
+
     test("POST rejects a request with missing fields", async () => {
         const response = await request(app)
             .post("/api/deployments")
@@ -54,9 +67,9 @@ describe("DeployX Deployments API", () => {
             });
 
         expect(response.status).toBe(400);
-        expect(response.body.error).toBe(
-            "Invalid status. Use RUNNING, SUCCESS, or FAILED"
-        );
+        expect(response.body).toEqual({
+            error: "Invalid status. Use RUNNING, SUCCESS, or FAILED"
+        });
     });
 
     test("PUT rejects a request without a status", async () => {
