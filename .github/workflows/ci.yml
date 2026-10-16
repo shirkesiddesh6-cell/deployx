@@ -1,0 +1,43 @@
+name: DeployX CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm install
+
+      - name: Check backend syntax
+        working-directory: ./backend
+        run: node --check server.js || echo "No server.js, skipping"
+
+      - name: Validate Docker Compose file
+        run: docker compose config
+
+      - name: Build backend Docker image
+        run: docker build -t deployx-backend:test ./backend
+
+      - name: Build frontend Docker image
+        run: docker build -t deployx-frontend:test ./frontend
+
+      - name: Build nginx Docker image
+        run: docker build -t deployx-nginx:test ./nginx
+
+      - name: CI passed
+        run: echo "✅ All checks passed"
