@@ -1,3 +1,4 @@
+
 name: DeployX CI
 
 on:
@@ -27,7 +28,7 @@ jobs:
         working-directory: ./backend
         run: node --check server.js || echo "No server.js, skipping"
 
-            - name: Create dummy .env for CI validation
+      - name: Create dummy .env for CI validation
         run: |
           cat > .env <<EOF
           POSTGRES_DB=deployx
@@ -48,4 +49,4 @@ jobs:
         run: docker build -t deployx-nginx:test ./nginx
 
       - name: CI passed
-        run: echo "✅ All checks passed"
+        run: echo "All checks passed"
