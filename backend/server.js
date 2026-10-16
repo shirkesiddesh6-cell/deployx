@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 const pool = require("./db");
@@ -8,6 +9,7 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
+// Health check
 app.get("/api/health", (req, res) => {
     res.json({
         status: "UP",
@@ -15,6 +17,7 @@ app.get("/api/health", (req, res) => {
     });
 });
 
+// Get platform status
 app.get("/api/status", async (req, res) => {
     try {
         const result = await pool.query(
@@ -30,6 +33,7 @@ app.get("/api/status", async (req, res) => {
     }
 });
 
+// Create platform status
 app.post("/api/status", async (req, res) => {
     try {
         const result = await pool.query(
@@ -46,6 +50,7 @@ app.post("/api/status", async (req, res) => {
     }
 });
 
+// Get all deployments
 app.get("/api/deployments", async (req, res) => {
     try {
         const result = await pool.query(
@@ -61,25 +66,29 @@ app.get("/api/deployments", async (req, res) => {
     }
 });
 
+// Create deployment
 app.post("/api/deployments", async (req, res) => {
     try {
         const { application_name, environment, status } = req.body;
 
-if (!application_name || !environment || !status) {
-    return res.status(400).json({
-        error: "Application name, environment, and status are required"
-    });
-}
+        if (!application_name || !environment || !status) {
+            return res.status(400).json({
+                error: "Application name, environment, and status are required"
+            });
+        }
 
-const allowedStatuses = ["RUNNING", "SUCCESS", "FAILED"];
+        const allowedStatuses = ["RUNNING", "SUCCESS", "FAILED"];
 
-if (!allowedStatuses.includes(status.toUpperCase())) {
-    return res.status(400).json({
-        error: "Invalid status. Use RUNNING, SUCCESS, or FAILED"
-    });
-}        
+        if (
+            typeof status !== "string" ||
+            !allowedStatuses.includes(status.toUpperCase())
+        ) {
+            return res.status(400).json({
+                error: "Invalid status. Use RUNNING, SUCCESS, or FAILED"
+            });
+        }
 
-const result = await pool.query(
+        const result = await pool.query(
             `INSERT INTO deployments
             (application_name, environment, status)
             VALUES ($1, $2, $3)
@@ -95,6 +104,8 @@ const result = await pool.query(
         });
     }
 });
+
+// Update deployment
 app.put("/api/deployments/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -121,16 +132,15 @@ app.put("/api/deployments/:id", async (req, res) => {
         }
 
         res.json(result.rows[0]);
-
     } catch (error) {
         console.error(error);
-
         res.status(500).json({
             error: "Failed to update deployment"
         });
     }
 });
 
+// Delete deployment
 app.delete("/api/deployments/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -152,17 +162,21 @@ app.delete("/api/deployments/:id", async (req, res) => {
             message: "Deployment deleted successfully",
             deployment: result.rows[0]
         });
-
     } catch (error) {
         console.error(error);
-
         res.status(500).json({
             error: "Failed to delete deployment"
         });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`DeployX backend running on port ${PORT}`);
-});
+// Start the server only when this file is run directly.
+// Importing the app for tests will not start another server.
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`DeployX backend running on port ${PORT}`);
+    });
+}
+
+module.exports = app;
 
