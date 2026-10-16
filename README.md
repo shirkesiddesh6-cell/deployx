@@ -2,7 +2,7 @@
 
 A self-hosted deployment and monitoring platform built with Docker, Kubernetes, Nginx, PostgreSQL, Prometheus, and Grafana.
 
-![DeployX Dashboard](docs/screenshots/deployx-dashboard.jpeg)
+![DeployX Dashboard](docs/screenshots/deployx-dashboard.png)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
